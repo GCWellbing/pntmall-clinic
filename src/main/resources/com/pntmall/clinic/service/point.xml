@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Point">
+	<select id="currentInfo" parameterType="java.lang.Integer" resultType="Point">
+		SELECT PNO,
+			   MEM_NO,
+			   CUR_POINT,
+			   PREV_POINT,
+			   POINT,
+			   REASON,
+			   EDATE
+		  FROM T_POINT
+		 WHERE PNO = (SELECT MAX(PNO) FROM T_POINT WHERE MEM_NO = #{memNo})
+	</select>
+
+	<insert id="insert" parameterType="Point">
+		INSERT INTO T_POINT (
+			MEM_NO,
+			CUR_POINT,
+			PREV_POINT,
+			POINT,
+			REASON,
+			EDATE,
+			USE_POINT,
+			BALANCE,
+			CDATE,
+			CUSER,
+			ORDERID
+		) VALUES (
+			#{memNo},
+			#{curPoint},
+			#{prevPoint},
+			#{point},
+			#{reason},
+			#{edate},
+			#{usePoint},
+			#{balance},
+			NOW(),
+			#{cuser},
+			#{orderid}
+		)
+	</insert>
+
+
+
+
+</mapper>

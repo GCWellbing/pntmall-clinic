@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ClinicProduct">
+	<select id="list" parameterType="java.lang.Integer" resultType="ClinicProduct">
+		SELECT A.MEM_NO,
+			   A.PNO,
+			   B.PNAME,
+			   B.SALE_PRICE
+		  FROM T_CLINIC_PRODUCT A
+		  		INNER JOIN T_PRODUCT B
+		  			ON A.PNO = B.PNO
+		 WHERE A.MEM_NO = #{memNo}
+		   AND A.STATUS = 'S'
+		ORDER BY A.PNO DESC
+	</select>
+
+	<insert id="insert" parameterType="ClinicProduct">
+		INSERT INTO T_CLINIC_PRODUCT (
+			MEM_NO,
+			PNO,
+			STATUS,
+			CDATE,
+			UDATE
+		) VALUES (
+			#{memNo},
+			#{pno},
+			'S',
+			NOW(),
+			NOW()
+		) 
+		ON DUPLICATE KEY 
+		UPDATE
+			STATUS	= 'S', 
+			UDATE = NOW()
+	</insert>
+	
+	<update id="delete" parameterType="ClinicProduct">
+		UPDATE T_CLINIC_PRODUCT
+		   SET STATUS 	= 'D',
+		   	   UDATE	= NOW()  
+		 WHERE MEM_NO	= #{memNo}
+		   AND PNO		= #{pno}
+	</update>
+	
+	<select id="productList" parameterType="ClinicProduct" resultType="ClinicProduct">
+		<![CDATA[
+		SELECT A.PNO,
+			   A.MATNR,
+			   A.PNAME,
+			   A.SALE_PRICE
+		  FROM T_PRODUCT A
+		  	   	LEFT OUTER JOIN T_SAP_PRODUCT B
+		  	   		ON A.MATNR = B.MATNR
+		 WHERE A.STATUS = 'S'
+		   AND A.PTYPE = 1
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pno)">
+		   AND A.PNO = #{pno}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pname)">
+		   AND A.PNAME LIKE CONCAT('%', #{pname}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}
+		</if>
+		ORDER BY PNO DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="productCount" parameterType="ClinicProduct" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_PRODUCT A
+		  	   	LEFT OUTER JOIN T_SAP_PRODUCT B
+		  	   		ON A.MATNR = B.MATNR
+		 WHERE A.STATUS = 'S'
+		   AND A.PTYPE = 1
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pno)">
+		   AND A.PNO = #{pno}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pname)">
+		   AND A.PNAME LIKE CONCAT('%', #{pname}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}
+		</if>
+	</select>
+	
+	
+	
+	
+
+</mapper>

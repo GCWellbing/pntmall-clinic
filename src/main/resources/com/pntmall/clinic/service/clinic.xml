@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Clinic">
+	<select id="list" parameterType="ClinicSearch" resultType="Clinic">
+		SELECT MEM_NO,
+			   MEM_ID,
+			   PASSWD,
+			   NAME,
+			   BIRTHDAY,
+			   GENDER,
+			   MTEL1,
+			   MTEL2,
+			   EMAIL,
+			   SMS_YN,
+			   EMAIL_YN,
+			   HEIGHT,
+			   WEIGHT,
+			   GRADE_NO,
+			   STATUS,
+			   (SELECT COUNT(*) FROM T_MEMBER_LOG WHERE MEM_NO = A.MEM_NO) LOGIN_CNT,
+   			   (SELECT MAX(CDATE) FROM T_MEMBER_LOG WHERE MEM_NO = A.MEM_NO) LOGIN_DATE,
+			   SLEEP_YN,
+			   OLD_MEMBER,
+			   MY_CLINIC_MEM_NO,
+			   LOGIN_FAIL_CNT,
+			   CDATE,
+			   UDATE
+		  FROM T_MEMBER A
+		 WHERE STATUS NOT IN ('D')
+		   AND NAME = #{name}
+		   AND CLINIC_YN = 'Y'
+		 <if test="@com.pntmall.common.mybatis.Check@equals(idSrhType, 'PHONE')">
+		   AND MTEL1 = #{mtel1}
+		   AND MTEL2 = #{mtel2}
+		</if>
+		 <if test="@com.pntmall.common.mybatis.Check@equals(idSrhType, 'EMAIL')">
+		   AND EMAIL = #{email}
+		</if>
+	</select>
+
+	<select id="infoClinicSap" parameterType="ClinicSearch" resultType="ClinicSap">
+		SELECT CLINIC_SELL_CD,
+			   BUSINESS_NAME,
+			   BUSINESS_NO,
+			   BUSINESS_OWNER,
+			   TEL,
+			   MTEL,
+			   ZIP,
+			   ADDR1,
+			   ADDR2,
+			   EMAIL,
+			   SUBJECT
+		  FROM T_CLINIC_SAP
+		 WHERE 1=1
+		   AND BUSINESS_NO = #{businessNo}
+		   AND BUSINESS_OWNER = #{businessOwner}
+	</select>
+
+	<select id="info" parameterType="ClinicSearch" resultType="Clinic">
+		SELECT A.MEM_NO,
+			   A.MEM_ID,
+			   A.PASSWD,
+			   A.NAME,
+			   A.MTEL1,
+			   A.MTEL2,
+			   A.EMAIL,
+			   A.EMAIL_YN,
+			   A.SMS_YN,
+			   A.LOGIN_FAIL_CNT,
+			   A.OLD_MEMBER,
+			   B.CLINIC_ID,
+			   B.CLINIC_NAME,
+			   B.ZIP,
+			   B.ADDR1,
+			   B.ADDR2,
+			   B.TEL1,
+			   B.TEL2,
+			   B.INTRO,
+			   B.SUBJECT,
+			   B.MON_SH,
+			   B.MON_SM,
+			   B.MON_EH,
+			   B.MON_EM,
+			   B.MON_CLOSE,
+			   B.TUE_SH,
+			   B.TUE_SM,
+			   B.TUE_EH,
+			   B.TUE_EM,
+			   B.TUE_CLOSE,
+			   B.WED_SH,
+			   B.WED_SM,
+			   B.WED_EH,
+			   B.WED_EM,
+			   B.WED_CLOSE,
+			   B.THU_SH,
+			   B.THU_SM,
+			   B.THU_EH,
+			   B.THU_EM,
+			   B.THU_CLOSE,
+			   B.FRI_SH,
+			   B.FRI_SM,
+			   B.FRI_EH,
+			   B.FRI_EM,
+			   B.FRI_CLOSE,
+			   B.SAT_SH,
+			   B.SAT_SM,
+			   B.SAT_EH,
+			   B.SAT_EM,
+			   B.SAT_CLOSE,
+			   B.SUN_SH,
+			   B.SUN_SM,
+			   B.SUN_EH,
+			   B.SUN_EM,
+			   B.SUN_CLOSE,
+			   B.HOLIDAY_SH,
+			   B.HOLIDAY_SM,
+			   B.HOLIDAY_EH,
+			   B.HOLIDAY_EM,
+			   B.HOLIDAY_CLOSE,
+			   B.LUNCH_SH,
+			   B.LUNCH_SM,
+			   B.LUNCH_EH,
+			   B.LUNCH_EM,
+			   B.LUNCH_YN,
+			   B.ALARM_TEL1,
+			   B.ALARM_TEL2,
+			   B.ALARM_TYPE,
+			   B.BLOG,
+			   B.YOUTUBE,
+			   B.FACEBOOK,
+			   B.INSTAGRAM,
+			   B.TWITTER,
+			   B.MEDICAL_NO,
+			   B.TAX_TYPE,
+			   B.BANK,
+			   B.DEPOSITOR,
+			   B.DEPOSITOR_NOT,
+			   B.ACCOUNT,
+			   B.DISP_YN,
+			   B.LATITUDE,
+			   B.LONGITUDE,
+			   B.DOCTOR_INTRO,
+			   B.DOCTOR_HISTORY,
+			   B.RESERVATION_YN,
+			   B.DIVISION_YN,
+			   B.PICKUP_YN,
+			   B.KATALK_YN,
+			   B.KATALK_ID,
+			   B.CLINIC_SELL_CD,
+			   B.CLINIC_BUY_CD,
+			   B.BUSINESS_NO,
+			   B.BUSINESS_NAME,
+			   B.BUSINESS_OWNER,
+			   B.BUSINESS_ITEM,
+			   B.BUSINESS_TYPE,
+			   B.BUSINESS_NO2,
+			   B.BUSINESS_NAME2,
+			   B.BUSINESS_OWNER2,
+			   B.BUSINESS_ITEM2,
+			   B.BUSINESS_TYPE2,
+			   B.NOTICE_YN,
+			   B.NOTICE,
+			   C.APPROVE,
+			   C.APPROVE_NAME,
+			   C.REASON,
+			   A.CDATE,
+			   A.STATUS,
+			   B.DIVISION_SCORE,
+			   B.PICKUP_SCORE,
+			   B.KATALK_SCORE,
+			   B.SNS_SCORE,
+			   B.INFO_SCORE,
+			   B.BBS_SCORE,
+			   B.TOTAL_SCORE,
+			   B.RECOMMEND_SEQ
+		  FROM T_MEMBER A
+		  	   JOIN T_CLINIC B
+		  	     ON B.MEM_NO = A.MEM_NO
+		  	   LEFT OUTER JOIN (SELECT AA.MEM_NO, AA.APPROVE, BB.NAME APPROVE_NAME, AA.REASON, AA.CDATE
+		  	                      FROM T_CLINIC_JOIN AA, T_CODE BB
+		  	                     WHERE AA.APPROVE = CONCAT(BB.CODE1, BB.CODE2)
+		  	                       AND (AA.MEM_NO, AA.JNO) IN (SELECT MEM_NO, MAX(JNO) FROM T_CLINIC_JOIN CC GROUP BY CC.MEM_NO)) C
+		  	      ON C.MEM_NO = A.MEM_NO
+		 WHERE 1=1
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(memNo)">
+			AND A.MEM_NO = #{memNo}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(memId)">
+			AND A.MEM_ID = #{memId}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(businessNo)">
+			AND B.BUSINESS_NO = #{businessNo}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(businessOwner)">
+			AND B.BUSINESS_OWNER = #{businessOwner}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(clinicYn)">
+			AND A.CLINIC_YN = #{clinicYn}
+		</if>
+	</select>
+
+	<select id="getClinicImgList" parameterType="ClinicSearch" resultType="ClinicImg">
+		<![CDATA[
+		SELECT A.INO,
+			   A.MEM_NO,
+			   A.GUBUN,
+			   A.ATTACH,
+			   A.ATTACH_ORG_NAME,
+			   A.CUSER,
+			   A.CDATE
+		  FROM T_CLINIC_IMG A
+		WHERE A.MEM_NO = #{memNo}
+		ORDER BY A.INO DESC
+		]]>
+	</select>
+
+	<select id="getClinicJoinList" parameterType="ClinicSearch" resultType="ClinicJoin">
+		<![CDATA[
+		SELECT A.JNO,
+			   A.MEM_NO,
+			   A.APPROVE,
+			   B.NAME APPROVE_NAME,
+			   A.REASON,
+			   A.CDATE,
+			   A.CUSER,
+			   A.UDATE,
+			   A.UUSER
+		  FROM T_CLINIC_JOIN A, T_CODE B
+		 WHERE A.APPROVE = CONCAT(B.CODE1, B.CODE2)
+           AND A.MEM_NO = #{memNo}
+		]]>
+		ORDER BY A.JNO DESC
+	</select>
+
+	<insert id="insertMember" parameterType="Clinic" useGeneratedKeys="true" keyProperty="memNo" keyColumn="MEM_NO">
+		INSERT INTO T_MEMBER (
+			MEM_NO,
+			MY_CLINIC_MEM_NO,
+			MEM_ID,
+			PASSWD,
+			NAME,
+			MTEL1,
+			MTEL2,
+			EMAIL,
+			SMS_YN,
+			EMAIL_YN,
+			GRADE_NO,
+			STATUS,
+			LOGIN_FAIL_CNT,
+			CLINIC_YN,
+			CDATE,
+			UDATE,
+			SLEEP_YN
+		) VALUES (
+			#{memNo},
+			#{memNo},
+			TRIM(#{memId}),
+			#{passwd},
+			TRIM(#{name}),
+			#{mtel1},
+			#{mtel2},
+			#{email},
+			#{smsYn},
+			#{emailYn},
+			1,
+			'S',
+			0,
+			'Y',
+			NOW(),
+			NOW(),
+			'N'
+		)
+	</insert>
+
+	<insert id="insertClinic" parameterType="Clinic">
+		INSERT INTO T_CLINIC (
+			MEM_NO,
+			CLINIC_ID,
+			CLINIC_NAME,
+			ZIP,
+			ADDR1,
+			ADDR2,
+			TEL1,
+			TEL2,
+			INTRO,
+			SUBJECT,
+			MON_SH,
+			MON_SM,
+			MON_EH,
+			MON_EM,
+			MON_CLOSE,
+			TUE_SH,
+			TUE_SM,
+			TUE_EH,
+			TUE_EM,
+			TUE_CLOSE,
+			WED_SH,
+			WED_SM,
+			WED_EH,
+			WED_EM,
+			WED_CLOSE,
+			THU_SH,
+			THU_SM,
+			THU_EH,
+			THU_EM,
+			THU_CLOSE,
+			FRI_SH,
+			FRI_SM,
+			FRI_EH,
+			FRI_EM,
+			FRI_CLOSE,
+			SAT_SH,
+			SAT_SM,
+			SAT_EH,
+			SAT_EM,
+			SAT_CLOSE,
+			SUN_SH,
+			SUN_SM,
+			SUN_EH,
+			SUN_EM,
+			SUN_CLOSE,
+			HOLIDAY_SH,
+			HOLIDAY_SM,
+			HOLIDAY_EH,
+			HOLIDAY_EM,
+			HOLIDAY_CLOSE,
+			LUNCH_SH,
+			LUNCH_SM,
+			LUNCH_EH,
+			LUNCH_EM,
+			LUNCH_YN,
+			ALARM_TEL1,
+			ALARM_TEL2,
+			ALARM_TYPE,
+			BLOG,
+			YOUTUBE,
+			FACEBOOK,
+			INSTAGRAM,
+			TWITTER,
+			MEDICAL_NO,
+			TAX_TYPE,
+			BANK,
+			DEPOSITOR,
+			DEPOSITOR_NOT,
+			ACCOUNT,
+			DISP_YN,
+			LATITUDE,
+			LONGITUDE,
+			DOCTOR_INTRO,
+			DOCTOR_HISTORY,
+			DIVISION_YN,
+			PICKUP_YN,
+			KATALK_YN,
+			KATALK_ID,
+			RESERVATION_YN,
+			CLINIC_SELL_CD,
+			CLINIC_BUY_CD,
+			BUSINESS_NO,
+			BUSINESS_NAME,
+			BUSINESS_OWNER,
+			BUSINESS_ITEM,
+			BUSINESS_TYPE,
+			BUSINESS_NO2,
+			BUSINESS_NAME2,
+			BUSINESS_OWNER2,
+			BUSINESS_ITEM2,
+			BUSINESS_TYPE2,
+			NOTICE_YN,
+			NOTICE
+		) VALUES (
+			#{memNo},
+			#{clinicId},
+			#{clinicName},
+			#{zip},
+			#{addr1},
+			#{addr2},
+			#{tel1},
+			#{tel2},
+			#{intro},
+			#{subject},
+			#{monSh},
+			#{monSm},
+			#{monEh},
+			#{monEm},
+			#{monClose},
+			#{tueSh},
+			#{tueSm},
+			#{tueEh},
+			#{tueEm},
+			#{tueClose},
+			#{wedSh},
+			#{wedSm},
+			#{wedEh},
+			#{wedEm},
+			#{wedClose},
+			#{thuSh},
+			#{thuSm},
+			#{thuEh},
+			#{thuEm},
+			#{thuClose},
+			#{friSh},
+			#{friSm},
+			#{friEh},
+			#{friEm},
+			#{friClose},
+			#{satSh},
+			#{satSm},
+			#{satEh},
+			#{satEm},
+			#{satClose},
+			#{sunSh},
+			#{sunSm},
+			#{sunEh},
+			#{sunEm},
+			#{sunClose},
+			#{holidaySh},
+			#{holidaySm},
+			#{holidayEh},
+			#{holidayEm},
+			#{holidayClose},
+			#{lunchSh},
+			#{lunchSm},
+			#{lunchEh},
+			#{lunchEm},
+			#{lunchYn},
+			#{alarmTel1},
+			#{alarmTel2},
+			#{alarmType},
+			#{blog},
+			#{youtube},
+			#{facebook},
+			#{instagram},
+			#{twitter},
+			#{medicalNo},
+			#{taxType},
+			#{bank},
+			#{depositor},
+			#{depositorNot},
+			#{account},
+			#{dispYn},
+			#{latitude},
+			#{longitude},
+			#{doctorIntro},
+			#{doctorHistory},
+			#{divisionYn},
+			#{pickupYn},
+			#{katalkYn},
+			#{katalkId},
+			#{reservationYn},
+			#{clinicSellCd},
+			#{clinicBuyCd},
+			#{businessNo},
+			#{businessName},
+			#{businessOwner},
+			#{businessItem},
+			#{businessType},
+			#{businessNo2},
+			#{businessName2},
+			#{businessOwner2},
+			#{businessItem2},
+			#{businessType2},
+			#{noticeYn},
+			#{notice}
+		)
+	</insert>
+
+	<delete id="deleteClinicImgInfo" parameterType="java.lang.Integer">
+		DELETE FROM T_CLINIC_IMG
+		 WHERE MEM_NO = #{memNo}
+		   AND GUBUN IN ('clinic','doctor')
+	</delete>
+
+	<delete id="deleteClinicImgDocu" parameterType="java.lang.Integer">
+		DELETE FROM T_CLINIC_IMG
+		 WHERE MEM_NO = #{memNo}
+		   AND GUBUN IN ('docu','health','bank','agree')
+	</delete>
+
+	<insert id="insertClinicImg" parameterType="ClinicImg">
+		INSERT INTO T_CLINIC_IMG (
+			MEM_NO,
+			GUBUN,
+			ATTACH,
+			ATTACH_ORG_NAME,
+			CUSER,
+			CDATE
+		) VALUES (
+			#{memNo},
+			#{gubun},
+			#{attach},
+			#{attachOrgName},
+			#{cuser},
+			NOW()
+		)
+	</insert>
+
+
+	<insert id="insertJoin" parameterType="ClinicJoin">
+		INSERT INTO T_CLINIC_JOIN (
+			MEM_NO,
+			APPROVE,
+			REASON,
+			SEND_MSG,
+			CUSER,
+			CDATE,
+			UUSER,
+			UDATE
+		) VALUES (
+			#{memNo},
+			#{approve},
+			#{reason},
+			#{sendMsg},
+			#{cuser},
+			NOW(),
+			#{cuser},
+			NOW()
+		)
+	</insert>
+
+	<insert id="insertLog" parameterType="MemberLog">
+		INSERT INTO T_MEMBER_CLINIC_LOG (
+			MEM_NO,
+			IP,
+			SUCCESS_YN,
+			DEVICE,
+			CDATE
+		) VALUES (
+			#{memNo},
+			#{ip},
+			#{successYn},
+			#{device},
+			now()
+		)
+	</insert>
+
+	<update id="updateFailCnt" parameterType="Clinic">
+		UPDATE T_MEMBER
+		   SET LOGIN_FAIL_CNT = #{loginFailCnt}
+		 WHERE MEM_NO = #{memNo}
+	</update>
+
+	<update id="update" parameterType="Clinic">
+		UPDATE T_MEMBER
+		   SET
+		   	   NAME	    = #{name},
+		   	   MTEL1	= #{mtel1},
+		   	   MTEL2	= #{mtel2},
+		   	   EMAIL	= #{email},
+		   	   EMAIL_YN	= #{emailYn},
+		   	   SMS_YN	= #{smsYn},
+			   UDATE	= NOW(),
+			   UUSER	= #{cuser}
+		 WHERE MEM_NO	= #{memNo}
+	</update>
+
+	<update id="updateClinic" parameterType="Clinic">
+		UPDATE T_CLINIC
+		   SET
+			   CLINIC_NAME	    = #{clinicName},
+			   ZIP              = #{zip},
+			   ADDR1            = #{addr1},
+			   ADDR2            = #{addr2},
+			   TEL1             = #{tel1},
+			   TEL2             = #{tel2},
+			   INTRO            = #{intro},
+			   SUBJECT          = #{subject},
+			   MON_SH           = #{monSh},
+			   MON_SM           = #{monSm},
+			   MON_EH           = #{monEh},
+			   MON_EM           = #{monEm},
+			   MON_CLOSE        = #{monClose},
+			   TUE_SH           = #{tueSh},
+			   TUE_SM           = #{tueSm},
+			   TUE_EH           = #{tueEh},
+			   TUE_EM           = #{tueEm},
+			   TUE_CLOSE        = #{tueClose},
+			   WED_SH           = #{wedSh},
+			   WED_SM           = #{wedSm},
+			   WED_EH           = #{wedEh},
+			   WED_EM           = #{wedEm},
+			   WED_CLOSE        = #{wedClose},
+			   THU_SH           = #{thuSh},
+			   THU_SM           = #{thuSm},
+			   THU_EH           = #{thuEh},
+			   THU_EM           = #{thuEm},
+			   THU_CLOSE        = #{thuClose},
+			   FRI_SH           = #{friSh},
+			   FRI_SM           = #{friSm},
+			   FRI_EH           = #{friEh},
+			   FRI_EM           = #{friEm},
+			   FRI_CLOSE        = #{friClose},
+			   SAT_SH           = #{satSh},
+			   SAT_SM           = #{satSm},
+			   SAT_EH           = #{satEh},
+			   SAT_EM           = #{satEm},
+			   SAT_CLOSE        = #{satClose},
+			   SUN_SH           = #{sunSh},
+			   SUN_SM           = #{sunSm},
+			   SUN_EH           = #{sunEh},
+			   SUN_EM           = #{sunEm},
+			   SUN_CLOSE        = #{sunClose},
+			   HOLIDAY_SH       = #{holidaySh},
+			   HOLIDAY_SM       = #{holidaySm},
+			   HOLIDAY_EH       = #{holidayEh},
+			   HOLIDAY_EM       = #{holidayEm},
+			   HOLIDAY_CLOSE    = #{holidayClose},
+			   LUNCH_SH         = #{lunchSh},
+			   LUNCH_SM         = #{lunchSm},
+			   LUNCH_EH         = #{lunchEh},
+			   LUNCH_EM         = #{lunchEm},
+			   LUNCH_YN         = #{lunchYn},
+			   ALARM_TEL1       = #{alarmTel1},
+			   ALARM_TEL2       = #{alarmTel2},
+			   ALARM_TYPE       = #{alarmType},
+			   BLOG             = #{blog},
+			   YOUTUBE          = #{youtube},
+			   FACEBOOK         = #{facebook},
+			   INSTAGRAM        = #{instagram},
+			   TWITTER          = #{twitter},
+			   MEDICAL_NO       = #{medicalNo},
+			   DOCTOR_INTRO     = #{doctorIntro},
+			   DOCTOR_HISTORY   = #{doctorHistory},
+			   DIVISION_YN      = #{divisionYn},
+			   PICKUP_YN        = #{pickupYn},
+			   KATALK_YN        = #{katalkYn},
+			   KATALK_ID        = #{katalkId},
+			   RESERVATION_YN   = #{reservationYn},
+			   CLINIC_SELL_CD   = #{clinicSellCd},
+			   CLINIC_BUY_CD    = #{clinicBuyCd},
+			   NOTICE_YN        = #{noticeYn},
+			   NOTICE           = #{notice}
+		 WHERE MEM_NO	        = #{memNo}
+	</update>
+
+	<update id="updateCalcu" parameterType="Clinic">
+		UPDATE T_CLINIC
+		   SET
+			   TAX_TYPE         = #{taxType},
+			   BUSINESS_OWNER   = #{businessOwner},
+			   BUSINESS_NO      = #{businessNo},
+			   BUSINESS_NAME    = #{businessName},
+			   BUSINESS_ITEM    = #{businessItem},
+			   BUSINESS_TYPE    = #{businessType},
+			   BUSINESS_OWNER2 = #{businessOwner2},
+			   BUSINESS_NO2     = #{businessNo2},
+			   BUSINESS_NAME2     = #{businessName2},
+			   BUSINESS_ITEM2   = #{businessItem2},
+			   BUSINESS_TYPE2   = #{businessType2},
+			   BANK             = #{bank},
+			   DEPOSITOR        = #{depositor},
+			   DEPOSITOR_NOT    = #{depositorNot},
+			   ACCOUNT          = #{account}
+		 WHERE MEM_NO	        = #{memNo}
+	</update>
+
+	<select id="getStipulation" parameterType="java.lang.Integer" resultType="Stipulation">
+		SELECT A.TITLE,
+			   A.CONTENT
+		  FROM T_STIPULATION A
+		 WHERE A.STATUS = 'S'
+		   AND A.GUBUN = #{gubun}
+		 ORDER BY A.STIPULATION_NO DESC
+		 LIMIT 1
+	</select>
+
+	<select id="getSensitive" parameterType="java.lang.Integer" resultType="Stipulation">
+		SELECT A.TITLE,
+			   A.CONTENT
+		  FROM T_SENSITIVE A
+		 WHERE A.STATUS = 'S'
+		 ORDER BY A.SENSITIVE_NO DESC
+		 LIMIT 1
+	</select>
+
+	<select id="getPrivacy" parameterType="java.lang.Integer" resultType="Stipulation">
+		SELECT A.TITLE,
+			   A.CONTENT
+		  FROM T_PRIVACY A
+		 WHERE A.STATUS = 'S'
+		   AND A.GUBUN = #{gubun}
+		 ORDER BY A.PRIVACY_NO DESC
+		 LIMIT 1
+	</select>
+
+	<update id="setPasswd" parameterType="Clinic">
+		UPDATE T_MEMBER
+		   SET PASSWD = #{passwd},
+		   	   OLD_MEMBER = 'N',
+		   	   SLEEP_YN = 'N'
+		 WHERE MEM_NO = #{memNo}
+	</update>
+
+
+	<update id="updateMemberMyClinic" parameterType="Clinic">
+		UPDATE T_MEMBER
+		   SET MY_CLINIC_MEM_NO = #{memNo}
+		 WHERE MEM_NO = #{memNo}
+	</update>
+
+
+	<select id="AgreeDocuInfo" resultType="AgreeDocu">
+		SELECT A.AD_NO,
+			   A.ATTACH,
+			   A.ATTACH_ORG_NAME,
+			   A.CUSER,
+			   A.CDATE,
+			   A.UUSER,
+			   A.UDATE
+		  FROM T_AGREEDOCU A
+		 ORDER BY A.AD_NO DESC
+		 LIMIT 1
+	</select>
+
+
+	<select id="infoMem" parameterType="ClinicSearch" resultType="Member">
+		SELECT A.MEM_NO,
+			   A.MEM_ID,
+			   A.NAME,
+			   A.MTEL1,
+			   A.MTEL2,
+			   A.EMAIL,
+			   A.EMAIL_YN,
+			   A.SMS_YN
+		  FROM T_MEMBER A
+		 WHERE A.MEM_NO = #{memNo}
+	</select>
+
+
+	<select id="isExists" parameterType="ClinicSearch" resultType="Clinic">
+		SELECT A.MEM_NO,
+			   A.MEM_ID
+		  FROM T_MEMBER A
+		 WHERE 1=1
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(memId)">
+			AND A.MEM_ID = #{memId}
+		</if>
+	</select>
+
+
+	<select id="getAdminInfo" parameterType="String" resultType="Admin">
+		SELECT ADMIN_NO,
+			   ADMIN_ID,
+			   NAME,
+			   PASSWD,
+			   EMAIL,
+			   MTEL,
+			   UPDATE_AUTH,
+			   TEAM_NO,
+			   LOGIN_FAIL_CNT,
+			   STATUS
+		  FROM T_ADMIN
+		  WHERE ADMIN_ID = #{adminId}
+	</select>
+
+</mapper>

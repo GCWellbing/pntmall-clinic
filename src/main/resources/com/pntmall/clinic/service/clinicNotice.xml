@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ClinicNotice">
+	<select id="list" parameterType="NoticeSearch" resultType="Notice">
+		<![CDATA[
+		SELECT A.NOTICE_NO,
+			   A.TITLE,
+			   A.CONTENT,
+			   A.STATUS,
+			   CASE WHEN A.STATUS = 'S' THEN '공개'
+			   		ELSE '비공개' END AS STATUS_NAME,
+			   A.FIX_YN,
+			   A.CDATE,
+			   A.UUSER,
+			   A.UDATE
+		  FROM T_CLINIC_NOTICE A
+		 WHERE A.STATUS = 'S'
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(title)">
+		   AND A.TITLE LIKE CONCAT('%', #{title}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(fixYn)">
+		   AND A.FIX_YN = #{fixYn}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(fromCdate)">
+		   AND A.CDATE >= #{fromCdate}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(toCdate)">
+		<![CDATA[
+		   AND A.CDATE < DATE_ADD(#{toCdate}, INTERVAL 1 DAY)
+	    ]]>
+		</if>
+		ORDER BY A.FIX_YN DESC, A.NOTICE_NO DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="count" parameterType="NoticeSearch" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_CLINIC_NOTICE A
+		 WHERE A.STATUS = 'S'
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(title)">
+		   AND A.TITLE LIKE CONCAT('%', #{title}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(fixYn)">
+		   AND A.FIX_YN = #{fixYn}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(fromCdate)">
+		   AND A.CDATE >= #{fromCdate}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(toCdate)">
+		<![CDATA[
+		   AND A.CDATE < DATE_ADD(#{toCdate}, INTERVAL 1 DAY)
+	    ]]>
+		</if>
+	</select>
+
+	<select id="info" parameterType="java.lang.Integer" resultType="Notice">
+		SELECT A.NOTICE_NO,
+			   A.TITLE,
+			   A.CONTENT,
+			   A.STATUS,
+			   CASE WHEN A.STATUS = 'S' THEN '공개'
+			   		ELSE '비공개' END AS STATUS_NAME,
+			   A.FIX_YN,
+			   A.CDATE,
+			   A.UUSER,
+			   A.UDATE
+		  FROM T_CLINIC_NOTICE A
+		 WHERE NOTICE_NO = #{noticeNo}
+		   AND A.STATUS = 'S'
+	</select>
+
+
+	<select id="getClinicNoticeImgList" parameterType="java.lang.Integer" resultType="NoticeImg">
+		<![CDATA[
+		SELECT A.INO,
+			   A.NOTICE_NO,
+			   A.ATTACH,
+			   A.ATTACH_ORG_NAME
+		  FROM T_CLINIC_NOTICE_IMG A
+		WHERE A.NOTICE_NO	= #{noticeNo}
+		ORDER BY A.INO DESC
+		]]>
+	</select>
+
+
+</mapper>

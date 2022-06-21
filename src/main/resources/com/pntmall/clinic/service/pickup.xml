@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Pickup">
+	<select id="list" parameterType="OrderSearch" resultType="Order">
+		<![CDATA[
+		SELECT A.ORDERID,
+			   A.ONAME,
+			   A.OMTEL1,
+			   A.OMTEL2,
+			   A.PICKUP_DATE,
+			   A.PICKUP_TIME,
+			   A.ODATE,
+			   A.STATUS,
+			   OSC.BO_NAME,
+			   (SELECT PNAME FROM T_ORDER_ITEM WHERE ORDERID = A.ORDERID LIMIT 1) PNAME,
+			   (SELECT COUNT(*) FROM T_ORDER_ITEM WHERE ORDERID = A.ORDERID) ITEM_CNT
+		  FROM T_ORDER A
+		  		INNER JOIN T_ORDER_STATUS_CODE OSC
+		  			ON A.STATUS = OSC.STATUS
+		 WHERE A.ORDER_GUBUN = 3
+		   AND A.PICKUP_CLINIC = #{pickupClinic}
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(sdate)">
+		<![CDATA[
+		   AND A.ODATE >= STR_TO_DATE(#{sdate}, '%Y.%m.%d')
+		]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(edate)">
+		<![CDATA[
+		   AND A.ODATE <= STR_TO_DATE(CONCAT(#{edate}, ' 23:59:59'), '%Y.%m.%d %H:%i:%s')
+		]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(orderGubun)">
+		   AND A.ORDER_GUBUN = #{orderGubun}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(oname)">
+		   AND A.ONAME LIKE CONCAT('%', #{oname}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(omtel)">
+		   AND CONCAT(A.OMTEL1, A.OMTEL2) LIKE CONCAT('%', #{omtel}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}	   	
+		</if>
+		ORDER BY ORDERID DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="count" parameterType="OrderSearch" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_ORDER A
+		  		INNER JOIN T_ORDER_STATUS_CODE OSC
+		  			ON A.STATUS = OSC.STATUS
+		 WHERE A.ORDER_GUBUN = 3
+		   AND A.PICKUP_CLINIC = #{pickupClinic}
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(sdate)">
+		<![CDATA[
+		   AND A.ODATE >= STR_TO_DATE(#{sdate}, '%Y.%m.%d')
+		]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(edate)">
+		<![CDATA[
+		   AND A.ODATE <= STR_TO_DATE(CONCAT(#{edate}, ' 23:59:59'), '%Y.%m.%d %H:%i:%s')
+		]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(orderGubun)">
+		   AND A.ORDER_GUBUN = #{orderGubun}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(oname)">
+		   AND A.ONAME LIKE CONCAT('%', #{oname}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(omtel)">
+		   AND CONCAT(A.OMTEL1, A.OMTEL2) LIKE CONCAT('%', #{omtel}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}	   	
+		</if>
+	</select>
+
+	<select id="info" parameterType="Order" resultType="Order">
+		SELECT A.ORDERID,
+			   A.ODATE,
+			   A.ONAME,
+			   A.OEMAIL,
+			   A.OMTEL1,
+			   A.OMTEL2,
+			   A.STATUS,
+			   A.POINT,
+			   A.PAY_AMT,
+			   A.PAY_TYPE,
+			   A.PICKUP_CLINIC,
+			   OSC.BO_NAME,
+			   M.MEM_ID,
+			   (SELECT MEMO FROM T_ORDER_MEMO WHERE ORDERID = A.ORDERID ORDER BY MNO LIMIT 1) MEMO
+		  FROM T_ORDER A
+		  		INNER JOIN T_ORDER_STATUS_CODE OSC
+		  			ON A.STATUS = OSC.STATUS
+		  		INNER JOIN T_MEMBER M
+		  			ON A.MEM_NO = M.MEM_NO
+		 WHERE A.ORDERID = #{orderid}
+		   AND A.PICKUP_CLINIC = #{pickupClinic}
+	</select>
+	
+	<select id="itemList" parameterType="java.lang.String" resultType="OrderItem">
+		SELECT A.ORDERID,
+			   A.SHIP_NO,
+			   A.PNO,
+			   A.PNAME,
+			   A.QTY,
+			   A.SALE_PRICE,
+			   A.APPLY_PRICE,
+			   (SELECT GROUP_CONCAT(CONCAT(P.PNAME) SEPARATOR '|') 
+			      FROM T_ORDER_GIFT G
+			      	   INNER JOIN T_PRODUCT P
+			      	   	ON G.PNO = P.PNO 
+			     WHERE G.ITEM_NO = A.ITEM_NO) GIFT
+		  FROM T_ORDER_ITEM A
+		 WHERE A.ORDERID = #{orderid}
+	</select>
+
+	<insert id="insertMemo" parameterType="OrderMemo">
+		INSERT INTO T_ORDER_MEMO (
+			ORDERID,
+			MEMO,
+			CUSER,
+			CDATE
+		) VALUES (
+			#{orderid},
+			#{memo},
+			#{cuser},
+			NOW()
+		)
+	</insert>
+
+	<update id="updateStatus" parameterType="Order">
+		UPDATE T_ORDER
+		   SET STATUS	= #{status}
+		 WHERE ORDERID	= #{orderid}
+	</update> 
+	
+	<insert id="insertStatusLog" parameterType="Order">
+		INSERT T_ORDER_STATUS_LOG (
+			ORDERID,
+			STATUS,
+			CUSER,
+			CDATE
+		) VALUES (
+			#{orderid},
+			#{status},
+			#{cuser},
+			NOW()
+		)
+	</insert>
+
+	<select id="todaySummary" parameterType="java.lang.Integer" resultType="Param">
+		SELECT SUM(
+				CASE WHEN A.STATUS = '380' THEN B.SALE_PRICE * -1 
+					 ELSE B.SALE_PRICE END) SALE_PRICE,
+			   SUM(
+				CASE WHEN A.STATUS = '380' THEN C.SUPPLY_PRICE * B.QTY * -1 
+					 ELSE C.SUPPLY_PRICE * B.QTY END) SUPPLY_PRICE
+		  FROM T_ORDER A
+				INNER JOIN T_ORDER_ITEM B
+					ON A.ORDERID = B.ORDERID
+				INNER JOIN T_PRODUCT C
+					ON B.PNO = C.PNO
+		 WHERE CLINIC_MEM_NO = #{clinicMemNo}
+		   AND A.ORDERID IN (SELECT ORDERID 
+							   FROM T_ORDER_STATUS_LOG
+							  WHERE ORDERID = A.ORDERID
+		                        AND STATUS = '120'
+		                        AND DATE(CDATE) = DATE(SYSDATE())
+							 UNION ALL
+		                     SELECT ORDERID
+		                       FROM T_ORDER_STATUS_LOG
+							  WHERE ORDERID = A.ORDERID
+		                        AND STATUS = '380'
+		                        AND DATE(CDATE) = DATE(SYSDATE()))	
+	</select>
+
+	<select id="countTodayPickup420" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM T_ORDER
+		 WHERE GUBUN = 1
+		   AND ORDER_GUBUN = 3
+		   AND CLINIC_MEM_NO = #{clinicMemNo}
+		   AND STATUS = '420'
+	</select>
+
+	<select id="countTodayPickup430" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM T_ORDER A
+		 WHERE GUBUN = 1
+		   AND ORDER_GUBUN = 3
+		   AND CLINIC_MEM_NO = #{clinicMemNo}
+		   AND STATUS = '430'
+		   AND ORDERID IN (SELECT ORDERID 
+						     FROM T_ORDER_STATUS_LOG
+						    WHERE ORDERID = A.ORDERID
+		                      AND STATUS = '430'
+		                      AND DATE(CDATE) = DATE(SYSDATE()))
+	</select>
+	
+	<insert id="insertRefund" parameterType="OrderRefund">
+		INSERT INTO T_ORDER_REFUND (
+			ORDERID,
+			BANK,
+			ACCOUNT,
+			DEPOSITOR,
+			AMT,
+			POINT,
+			REASON,
+			REASON2,
+			REJECT_REASON,
+			CUSER,
+			CDATE
+		) VALUES (
+			#{orderid},
+			#{bank},
+			#{account},
+			#{depositor},
+			#{amt},
+			#{point},
+			#{reason},
+			#{reason2},
+			#{rejectReason},
+			#{cuser},
+			NOW()
+		)
+	</insert>
+	
+	
+	
+	
+</mapper>

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Reservation">
+
+	<select id="memberCount" parameterType="ReservationSearch" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_MEMBER A
+		 WHERE A.MY_CLINIC_MEM_NO = #{clinicMemNo}
+		   AND DATE_FORMAT(A.MY_CLINIC_DATE,'%Y%M%D') = DATE_FORMAT(NOW(),'%Y%M%D')
+	   ]]>
+	</select>
+
+	<select id="memberTotalCount" parameterType="ReservationSearch" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_MEMBER A
+		 WHERE A.MY_CLINIC_MEM_NO = #{clinicMemNo}
+		   AND IFNULL(A.CLINIC_YN,'N') = 'N'
+		   AND A.STATUS = 'S'
+	   ]]>
+	</select>
+
+	<select id="memberRankRate" parameterType="ReservationSearch" resultType="java.lang.Integer">
+		<![CDATA[
+			SELECT ROUND(A.RANK/B.TOTCNT*100, 0) RANK_RATE
+			  FROM (/*해당순위*/
+			        SELECT MY_CLINIC_MEM_NO
+						, CASE WHEN @PREV_VALUE = SCORE THEN @VRANK
+							   WHEN @PREV_VALUE := SCORE THEN @VRANK := @VRANK +1
+						  END AS RANK
+					  FROM (SELECT MY_CLINIC_MEM_NO, COUNT(*) SCORE
+							  FROM T_MEMBER A
+							 WHERE IFNULL(A.CLINIC_YN,'N') = 'N'
+							   AND A.STATUS = 'S'
+							   AND MY_CLINIC_MEM_NO IS NOT NULL
+							GROUP BY MY_CLINIC_MEM_NO ) P,
+						  (SELECT @VRANK := 0, @PREV_VALUE := NULL) AS R
+					 ORDER BY SCORE DESC) A,
+					 ( /* 회원 있는 병원 숫자 */
+					 SELECT COUNT(R.MY_CLINIC_MEM_NO) TOTCNT
+					   FROM ( SELECT MY_CLINIC_MEM_NO
+								  FROM T_MEMBER A
+								 WHERE IFNULL(A.CLINIC_YN,'N') = 'N'
+								   AND A.STATUS = 'S'
+								   AND MY_CLINIC_MEM_NO IS NOT NULL
+								GROUP BY MY_CLINIC_MEM_NO ) AS R ) B
+			 WHERE A.MY_CLINIC_MEM_NO = #{clinicMemNo}
+	   ]]>
+	</select>
+	<select id="memberChart" parameterType="ReservationSearch" resultType="Param">
+		<![CDATA[
+			SELECT DATE_FORMAT(STR_TO_DATE(D.YM, '%Y%m'),'%Y-%m') YM
+			     , IFNULL(MEM.M_CNT,0) M_CNT
+			     , IFNULL(MEM.W_CNT,0) W_CNT
+			     , IFNULL(MEM.NOSEX_CNT,0) NOSEX_CNT
+			  FROM (SELECT DATE_FORMAT(d,'%Y%m') YM FROM T_DATE
+					 WHERE D >  DATE_ADD(NOW(), INTERVAL -11 MONTH)
+					   AND D <= NOW()
+				  	 GROUP BY DATE_FORMAT(D,'%Y%m') ) D
+			         LEFT OUTER JOIN (SELECT DATE_FORMAT(A.CDATE,'%Y%m') YM
+										   , SUM(IF(A.GENDER = 'M' ,1,0)) M_CNT
+										   , SUM(IF(A.GENDER = 'W' ,1,0)) W_CNT
+										   , SUM(IF(IFNULL(A.GENDER, '')  = '' ,1,0)) NOSEX_CNT
+									    FROM T_MEMBER A, t_myclinic_his B
+									   WHERE a.MEM_NO = B.MEM_NO
+						                 AND B.MY_CLINIC_MEM_NO = #{clinicMemNo}
+									     AND IFNULL(A.CLINIC_YN,'N') = 'N'
+									   GROUP BY DATE_FORMAT(CDATE,'%Y%m') ) MEM
+			         ON D.YM = MEM.YM
+	   ]]>
+	</select>
+
+	<select id="list" parameterType="ReservationSearch" resultType="Reservation">
+		<![CDATA[
+		SELECT A.RES_NO,
+			   A.CATE,
+			   B.NAME CATE_NAME,
+			   A.RDATE,
+			   A.RTIME,
+			   A.CLINIC_MEM_NO,
+			   CASE WHEN LENGTH(A.CLINIC_MEM_NO) > 0 THEN (SELECT CLINIC_NAME FROM T_CLINIC WHERE MEM_NO = A.CLINIC_MEM_NO)
+			   		ELSE '' END AS CLINIC_NAME,
+			   A.STATUS,
+			   C.NAME STATUS_NAME,
+			   A.REASON,
+			   A.CONTENT,
+			   A.CUSER,
+			   CASE WHEN A.CUSER > 2000000000 THEN (SELECT NAME FROM T_ADMIN WHERE ADMIN_NO = A.CUSER)
+			        ELSE (SELECT NAME FROM T_MEMBER WHERE MEM_NO = A.CUSER) END AS CUSER_NAME,
+			   CASE WHEN A.CUSER > 2000000000 THEN (SELECT ADMIN_ID FROM T_ADMIN WHERE ADMIN_NO = A.CUSER)
+			        ELSE (SELECT MEM_ID FROM T_MEMBER WHERE MEM_NO = A.CUSER) END AS CUSER_ID,
+			   A.MTEL1,
+			   A.MTEL2,
+			   A.CDATE,
+			   A.UUSER,
+			   CASE WHEN A.UUSER > 2000000000 THEN (SELECT NAME FROM T_ADMIN WHERE ADMIN_NO = A.UUSER)
+			        ELSE (SELECT NAME FROM T_MEMBER WHERE MEM_NO = A.UUSER) END AS UUSER_NAME,
+			   CASE WHEN A.UUSER > 2000000000 THEN (SELECT ADMIN_ID FROM T_ADMIN WHERE ADMIN_NO = A.UUSER)
+			        ELSE (SELECT MEM_ID FROM T_MEMBER WHERE MEM_NO = A.UUSER) END AS UUSER_ID,
+			   A.UDATE,
+			   M.EMAIL
+		  FROM T_RESERVATION A
+		  	   INNER JOIN T_CODE B
+		  	      ON A.CATE = CONCAT(B.CODE1, B.CODE2)
+		  	   INNER JOIN T_CODE C
+		  	      ON A.STATUS = CONCAT(C.CODE1, C.CODE2)
+		  	   LEFT OUTER JOIN T_MEMBER M
+		  	      ON A.CUSER = M.MEM_NO
+		 WHERE 1=1
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(cate)">
+		   AND A.CATE = #{cate}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(clinicMemNo)">
+		   AND A.CLINIC_MEM_NO = #{clinicMemNo}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(clinicName)">
+		   AND EXISTS (SELECT CL.MEM_NO
+		   	 			 FROM T_CLINIC CL
+		   	 			WHERE CL.MEM_NO = A.CLINIC_MEM_NO
+		   	 			  AND CL.CLINIC_NAME LIKE CONCAT('%', #{clinicName}, '%'))
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(fromDate)">
+		<![CDATA[
+		   AND A.CDATE >= #{fromDate}
+	    ]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(toDate)">
+		<![CDATA[
+		   AND A.CDATE < DATE_ADD(#{toDate}, INTERVAL 1 DAY)
+	    ]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+			<if test="@com.pntmall.common.mybatis.Check@equals(status,'025002')">
+		   		AND A.STATUS IN ('025002','025006')
+	   		</if>
+			<if test="@com.pntmall.common.mybatis.Check@notEquals(status,'025002')">
+		   		AND A.STATUS = #{status}
+	   		</if>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(name)">
+		   AND EXISTS (SELECT M.MEM_NO
+		   	 			 FROM T_MEMBER M
+		   	 			WHERE M.MEM_NO = A.CUSER
+		   	 			  AND M.NAME LIKE CONCAT('%', #{name}, '%'))
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(mtel)">
+		   AND CONCAT(A.MTEL1, A.MTEL2) LIKE CONCAT('%', #{mtel}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(doctorPack)">
+		   AND A.CATE = '016005'
+		   AND A.STATUS IN('025004','025005','025006')
+		</if>
+
+		ORDER BY A.RES_NO DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="count" parameterType="ReservationSearch" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_RESERVATION A
+		 WHERE 1=1
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(cate)">
+		   AND A.CATE = #{cate}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(clinicMemNo)">
+		   AND A.CLINIC_MEM_NO = #{clinicMemNo}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(clinicName)">
+		   AND EXISTS (SELECT CL.MEM_NO
+		   	 			 FROM T_CLINIC CL
+		   	 			WHERE CL.MEM_NO = A.CLINIC_MEM_NO
+		   	 			  AND CL.CLINIC_NAME LIKE CONCAT('%', #{clinicName}, '%'))
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(fromDate)">
+		<![CDATA[
+		   AND A.CDATE >= #{fromDate}
+	    ]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(toDate)">
+		<![CDATA[
+		   AND A.CDATE < DATE_ADD(#{toDate}, INTERVAL 1 DAY)
+	    ]]>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+			<if test="@com.pntmall.common.mybatis.Check@equals(status,'025002')">
+		   		AND A.STATUS IN ('025002','025006')
+	   		</if>
+			<if test="@com.pntmall.common.mybatis.Check@notEquals(status,'025002')">
+		   		AND A.STATUS = #{status}
+	   		</if>
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(name)">
+		   AND EXISTS (SELECT M.MEM_NO
+		   	 			 FROM T_MEMBER M
+		   	 			WHERE M.MEM_NO = A.CUSER
+		   	 			  AND M.NAME LIKE CONCAT('%', #{name}, '%'))
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(mtel)">
+		   AND CONCAT(A.MTEL1, A.MTEL2) LIKE CONCAT('%', #{mtel}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(doctorPack)">
+		   AND A.CATE = '016005'
+		   AND A.STATUS IN('025004','025005','025006')
+		</if>
+	</select>
+
+	<select id="info" parameterType="ReservationSearch" resultType="Reservation">
+		<![CDATA[
+		SELECT A.RES_NO,
+			   A.CATE,
+			   B.NAME CATE_NAME,
+			   A.RDATE,
+			   A.RTIME,
+			   A.CLINIC_MEM_NO,
+			   CASE WHEN LENGTH(A.CLINIC_MEM_NO) > 0 THEN (SELECT CLINIC_NAME FROM T_CLINIC WHERE MEM_NO = A.CLINIC_MEM_NO)
+			   		ELSE '' END AS CLINIC_NAME,
+			   A.STATUS,
+			   C.NAME STATUS_NAME,
+			   A.REASON,
+			   A.CUSER,
+			   CASE WHEN A.CUSER > 2000000000 THEN (SELECT NAME FROM T_ADMIN WHERE ADMIN_NO = A.CUSER)
+			        ELSE (SELECT NAME FROM T_MEMBER WHERE MEM_NO = A.CUSER) END AS CUSER_NAME,
+			   CASE WHEN A.CUSER > 2000000000 THEN (SELECT ADMIN_ID FROM T_ADMIN WHERE ADMIN_NO = A.CUSER)
+			        ELSE (SELECT MEM_ID FROM T_MEMBER WHERE MEM_NO = A.CUSER) END AS CUSER_ID,
+			   A.MTEL1,
+			   A.MTEL2,
+			   A.CDATE,
+			   A.UUSER,
+			   CASE WHEN A.UUSER > 2000000000 THEN (SELECT NAME FROM T_ADMIN WHERE ADMIN_NO = A.UUSER)
+			        ELSE (SELECT NAME FROM T_MEMBER WHERE MEM_NO = A.UUSER) END AS UUSER_NAME,
+			   CASE WHEN A.UUSER > 2000000000 THEN (SELECT ADMIN_ID FROM T_ADMIN WHERE ADMIN_NO = A.UUSER)
+			        ELSE (SELECT MEM_ID FROM T_MEMBER WHERE MEM_NO = A.UUSER) END AS UUSER_ID,
+			   A.UDATE,
+			   M.EMAIL,
+			   A.MEMO,
+			   A.CONTENT,
+			   A.HEALTH_SEQ
+		  FROM T_RESERVATION A
+		  	   JOIN T_CODE B
+		  	      ON A.CATE = CONCAT(B.CODE1, B.CODE2)
+		  	   INNER JOIN T_CODE C
+		  	      ON A.STATUS = CONCAT(C.CODE1, C.CODE2)
+		  	   LEFT OUTER JOIN T_MEMBER M
+		  	      ON A.CUSER = M.MEM_NO
+		 WHERE A.RES_NO = #{resNo}
+		   AND A.CLINIC_MEM_NO = #{clinicMemNo}
+		 ]]>
+	</select>
+
+	<select id="productList" parameterType="ReservationSearch" resultType="ReservationProduct">
+		<![CDATA[
+		SELECT A.PNO,
+			   A.RES_NO,
+			   B.PNAME,
+			   B.SALE_PRICE,
+			   (SELECT NAME
+			      FROM T_PRODUCT_NUTRITION D, T_NUTRITION E
+			     WHERE D.NUTRITION_NO = E.NUTRITION_NO
+			       AND A.PNO = D.PNO
+			     ORDER BY RANK
+				 LIMIT 1) NUTRITION_NAME
+		  FROM T_RESERVATION_PRODUCT A
+		  	   INNER JOIN T_PRODUCT B
+		  	   	ON A.PNO = B.PNO
+		 WHERE A.RES_NO = #{resNo}
+	   	]]>
+	</select>
+
+	<update id="update" parameterType="Reservation">
+		UPDATE T_RESERVATION
+		   SET REASON		= #{reason},
+			   STATUS		= #{status},
+			   UUSER		= #{uuser},
+			   UDATE		= NOW()
+		 WHERE RES_NO	= #{resNo}
+		   AND CLINIC_MEM_NO = #{clinicMemNo}
+	</update>
+
+	<update id="updateMemo" parameterType="Reservation">
+		UPDATE T_RESERVATION
+		   SET MEMO		= #{memo}
+		 WHERE RES_NO	= #{resNo}
+		   AND CLINIC_MEM_NO = #{clinicMemNo}
+	</update>
+
+
+	<update id="updateComplete" parameterType="Reservation">
+		UPDATE T_RESERVATION
+		   SET STATUS		= '025005',
+			   UUSER		= #{uuser},
+			   UDATE		= NOW()
+		 WHERE RES_NO	    = #{resNo}
+		   AND CLINIC_MEM_NO = #{clinicMemNo}
+	</update>
+
+	<insert id="insertProduct" parameterType="ReservationProduct">
+		INSERT
+		  INTO T_RESERVATION_PRODUCT (
+			   RES_NO,
+			   PNO
+		) VALUES (
+			   #{resNo},
+			   #{pno}
+		)
+	</insert>
+
+	<delete id="deleteProduct" parameterType="Reservation">
+		DELETE FROM T_RESERVATION_PRODUCT
+		 WHERE RES_NO	    = #{resNo}
+	</delete>
+
+	<select id="getDoctorPackCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_RESERVATION
+		 WHERE CATE = '016005'
+		   AND STATUS = '025004'
+		   AND CLINIC_MEM_NO = #{clinicMemNo}
+	   ]]>
+	</select>
+
+</mapper>

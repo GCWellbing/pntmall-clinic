@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Product">
+	<select id="list" parameterType="ProductSearch" resultType="Product">
+		<![CDATA[
+		SELECT A.PNO,
+			   A.MATNR,
+			   A.RANK,
+			   A.PNAME,
+			   A.CDATE,
+			   A.SALE_PRICE,
+			   CASE WHEN A.STATUS = 'S' THEN '공개'
+			   		WHEN A.STATUS = 'E' THEN '단종'
+			   		ELSE '비공개' END AS STATUS_NAME,
+			   B.LABST,
+			   C.NAME BRAND_NAME,
+			   (SELECT NAME
+			      FROM T_PRODUCT_NUTRITION D, T_NUTRITION E
+			     WHERE D.NUTRITION_NO = E.NUTRITION_NO
+			       AND A.PNO = D.PNO
+			     ORDER BY RANK
+				 LIMIT 1) NUTRITION_NAME
+		  FROM T_PRODUCT A
+		  	   	LEFT OUTER JOIN T_SAP_PRODUCT B
+		  	   		ON A.MATNR = B.MATNR
+		  	   	LEFT OUTER JOIN T_CODE C
+		  	   		ON A.BRAND = CONCAT(C.CODE1, C.CODE2)
+		 WHERE A.STATUS <> 'D'
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(brand)">
+		   AND A.BRAND = #{brand}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(cateNo)">
+		   AND A.PNO IN (SELECT PNO FROM T_PRODUCT_CATEGORY WHERE CATE_NO = #{cateNo})
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pno)">
+		   AND A.PNO = #{pno}
+		</if>
+		<if test='@com.pntmall.common.mybatis.Check@notEmpty(deliveryType) and deliveryType.equals("1")'>
+		   AND A.COLD_YN = 'Y'
+		</if>
+		<if test='@com.pntmall.common.mybatis.Check@notEmpty(deliveryType) and deliveryType.equals("2")'>
+		   AND A.ROUTINE_YN = 'Y'
+		</if>
+		<if test='@com.pntmall.common.mybatis.Check@notEmpty(deliveryType) and deliveryType.equals("3")'>
+		   AND A.CLINIC_PICKUP = 'Y'
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(matnr)">
+		   AND A.MATNR = #{matnr}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pname)">
+		   AND A.PNAME LIKE CONCAT('%', #{pname}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(ptype)">
+		   AND A.PTYPE = #{ptype}
+		</if>
+		ORDER BY PNO DESC
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="count" parameterType="ProductSearch" resultType="java.lang.Integer">
+		<![CDATA[
+		SELECT COUNT(*)
+		  FROM T_PRODUCT A
+		  	   	LEFT OUTER JOIN T_SAP_PRODUCT B
+		  	   		ON A.MATNR = B.MATNR
+		 WHERE A.STATUS <> 'D'
+		]]>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(brand)">
+		   AND A.BRAND = #{brand}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(cateNo)">
+		   AND A.PNO IN (SELECT PNO FROM T_PRODUCT_CATEGORY WHERE CATE_NO = #{cateNo})
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pno)">
+		   AND A.PNO = #{pno}
+		</if>
+		<if test='@com.pntmall.common.mybatis.Check@notEmpty(deliveryType) and deliveryType.equals("1")'>
+		   AND A.COLD_YN = 'Y'
+		</if>
+		<if test='@com.pntmall.common.mybatis.Check@notEmpty(deliveryType) and deliveryType.equals("2")'>
+		   AND A.ROUTINE_YN = 'Y'
+		</if>
+		<if test='@com.pntmall.common.mybatis.Check@notEmpty(deliveryType) and deliveryType.equals("3")'>
+		   AND A.CLINIC_PICKUP = 'Y'
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(matnr)">
+		   AND A.MATNR = #{matnr}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(status)">
+		   AND A.STATUS = #{status}
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(pname)">
+		   AND A.PNAME LIKE CONCAT('%', #{pname}, '%')
+		</if>
+		<if test="@com.pntmall.common.mybatis.Check@notEmpty(ptype)">
+		   AND A.PTYPE = #{ptype}
+		</if>
+	</select>
+
+</mapper>

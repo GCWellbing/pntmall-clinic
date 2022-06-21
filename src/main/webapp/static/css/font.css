@@ -1,0 +1,132 @@
+@CHARSET "UTF-8";
+/*
+	- NotoSans -
+	- Weight -
+	Thin : 100
+	Light : 300
+	Regular : 400
+	Medium : 500
+	Bold : 700
+	Black : 900
+*/
+@font-face {
+  font-family:'NotoSans';
+  font-style: normal;
+  font-weight: 100;
+  src: url(/static/fonts/NotoSansCJKkr-Thin.eot);
+  src: local(※),
+  		url(/static/fonts/NotoSansCJKkr-Thin.woff2) format('woff2'),
+       url(/static/fonts/NotoSansCJKkr-Thin.woff) format('woff'),
+       url(/static/fonts/NotoSansCJKkr-Thin.eot) format('opentype');
+}
+
+@font-face {
+  font-family:'NotoSans';
+  font-style: normal;
+  font-weight: 300;
+  src: url(/static/fonts/NotoSansCJKkr-Light.eot);
+  src: local(※),
+  		url(/static/fonts/NotoSansCJKkr-Light.woff2) format('woff2'),
+       url(/static/fonts/NotoSansCJKkr-Light.woff) format('woff'),
+       url(/static/fonts/NotoSansCJKkr-Light.eot) format('opentype');
+}
+
+@font-face {
+  font-family:'NotoSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/static/fonts/NotoSansCJKkr-Regular.eot);
+  src: local(※),
+  		url(/static/fonts/NotoSansCJKkr-Regular.woff2) format('woff2'),
+       url(/static/fonts/NotoSansCJKkr-Regular.woff) format('woff'),
+       url(/static/fonts/NotoSansCJKkr-Regular.eot) format('opentype');
+}
+
+@font-face {
+  font-family:'NotoSans';
+  font-style: normal;
+  font-weight: 500;
+  src: url(/static/fonts/NotoSansCJKkr-Medium.eot);
+  src: local(※),
+  		url(/static/fonts/NotoSansCJKkr-Medium.woff2) format('woff2'),
+       url(/static/fonts/NotoSansCJKkr-Medium.woff) format('woff'),
+       url(/static/fonts/NotoSansCJKkr-Medium.eot) format('opentype');
+}
+
+@font-face {
+  font-family:'NotoSans';
+  font-style: normal;
+  font-weight: 700;
+  src: url(/static/fonts/NotoSansCJKkr-Bold.eot);
+  src: local(※),
+  		url(/static/fonts/NotoSansCJKkr-Bold.woff2) format('woff2'),
+       url(/static/fonts/NotoSansCJKkr-Bold.woff) format('woff'),
+       url(/static/fonts/NotoSansCJKkr-Bold.eot) format('opentype');
+}
+
+@font-face {
+  font-family:'NotoSans';
+  font-style: normal;
+  font-weight: 900;
+  src: url(/static/fonts/NotoSansCJKkr-Black.eot);
+  src: local(※),
+  		url(/static/fonts/NotoSansCJKkr-Black.woff2) format('woff2'),
+       url(/static/fonts/NotoSansCJKkr-Black.woff) format('woff'),
+       url(/static/fonts/NotoSansCJKkr-Black.eot) format('opentype');
+}
+
+
+@font-face {
+  font-family:'NanumSquare';
+  font-style: normal;
+  font-weight: 400;
+  src: url(/static/fonts/NanumSquareR.eot);
+  src: local(※),
+  		url(/static/fonts/NanumSquareR.woff2) format('woff2'),
+       url(/static/fonts/NanumSquareR.woff) format('woff'),
+       url(/static/fonts/NanumSquareR.eot) format('opentype');
+}
+
+@font-face {
+  font-family:'NanumSquare';
+  font-style: normal;
+  font-weight: 700;
+  src: url(/static/fonts/NanumSquareB.eot);
+  src: local(※),
+  		url(/static/fonts/NanumSquareB.woff2) format('woff2'),
+       url(/static/fonts/NanumSquareB.woff) format('woff'),
+       url(/static/fonts/NanumSquareB.eot) format('opentype');
+}
+
+@font-face {
+    font-family: 'Assistant';
+    font-style: normal;
+    font-weight:300;
+    src: url(/static/fonts/Assistant-Light.woff) format('woff'),
+    url(/static/fonts/Assistant-Light.woff2) format('woff2'),
+    url(/static/fonts/Assistant-Light.eot);
+}
+@font-face {
+    font-family: 'Assistant';
+    font-style: normal;
+    font-weight:400;
+    src: url(/static/fonts/Assistant-Regular.woff) format('woff'),
+    url(/static/fonts/Assistant-Regular.woff2) format('woff2'),
+    url(/static/fonts/Assistant-Regular.eot);
+}
+@font-face {
+    font-family: 'Assistant';
+    font-style: normal;
+    font-weight: 500;
+    src: url(/static/fonts/Assistant-SemiBold.woff) format('woff'),
+    url(/static/fonts/Assistant-SemiBold.woff2) format('woff2'),
+    url(/static/fonts/Assistant-SemiBold.eot);
+}
+@font-face {
+    font-family: 'Assistant';
+    font-style: normal;
+    font-weight: 600;
+    src: url(/static/fonts/Assistant-Bold.woff2) format('woff2'),
+    url(/static/fonts/Assistant-Bold.woff) format('woff'),
+    url(/static/fonts/Assistant-Bold.eot);
+}

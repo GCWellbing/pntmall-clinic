@@ -1,0 +1,302 @@
+@charset "UTF-8";
+
+/* 공통 */
+body {box-sizing:border-box;
+	* {box-sizing:border-box;}
+}
+#popWrap {overflow:hidden; width:350px; padding:0 20px; margin:0 auto; border-radius:10px; background:#fff;
+	#popCont {overflow-x:hidden; padding:30px 0;
+		&.includeFixedBtn {padding-bottom:106px !important;}
+	}
+	h1 {height:68px; border-bottom:1px solid #111; font-weight:600; font-size:18px; line-height:67px;
+		.num {position:relative; left:5px; top:-10px; font-size:14px; line-height:1em; color:#ff5a00; font-weight:600;}
+		&.line {height:70px; border-bottom:2px solid #bbb;}
+	}
+	&.typeB {width:520px;
+		#popCont {padding:10px 0 30px;}
+		h1 {height:76px; padding-left:0; border-bottom:0; font-size:24px; line-height:76px;
+			&.line {height:78px; border-bottom:2px solid #bbb;}
+		}
+	}
+	&.typeC {width:1080px; padding:0 30px;
+		#popCont {padding:10px 0 30px;}
+		h1 {height:76px; padding-left:0; border-bottom:0; font-size:24px; line-height:76px;
+			&.line {height:78px; border-bottom:2px solid #bbb;}
+		}
+		.btnArea span button, .btnArea span a {max-width:250px;}
+	}
+	&.typeD {box-sizing:content-box; padding:0 100px; border-radius:0; background:none;
+		.wrap {position:relative; padding:0 30px; border-radius:10px; background:#fff;}
+	}
+	&.typeE {width:850px;
+		#popCont {padding:10px 0 30px;}
+		h1 {height:76px; padding-left:0; border-bottom:0; font-size:24px; line-height:76px;
+			&.line {height:78px; border-bottom:2px solid #bbb;}
+		}
+		.btnArea span button, .btnArea span a {max-width:250px;}
+	}
+	&.typeF {width:770px;
+		#popCont {padding:10px 0 30px;}
+		h1 {height:76px; padding-left:0; border-bottom:0; font-size:24px; line-height:76px;
+			&.line {height:78px; border-bottom:2px solid #bbb;}
+		}
+	}
+	.bgLayer {border-radius:10px;}
+}
+.btnArea {display:table; width:calc(100% + 10px); margin:40px 0 0 -10px; table-layout:fixed;
+	>span {display:table-cell; padding-left:10px; text-align:center;
+		button, a {width:100%; padding:0;}
+	}
+	&:After {display:none;}
+}
+.fixedBtn {position:fixed; left:0; bottom:0; right:0; z-index:10; padding:20px; border-radius:0 0 10px 10px; box-shadow:0 -4px 30px 0 rgba(0, 0, 0, .1); background:#fff;
+	.btn {width:100%;}
+}
+
+/* 장바구니 */
+.cartComplete {text-align:center; line-height:1em;
+	strong {display:block; margin-bottom:10px; font-size:16px;}
+	&:before {content:""; display:block; width:32px; height:42px; margin:0 auto 20px; background:url(/static/images/icon/ic_cart3.png) no-repeat 0 0;}
+}
+
+/* 포토리뷰 */
+.photoReviewList {overflow:hidden;
+	li {position:relative; float:left; width:161px; height:161px; margin:0 0 10px 10px;
+		img {width:100%;}
+		&:nth-child(6n+1) {margin-left:0;}
+		.num {position:absolute; right:10px; bottom:10px; width:28px; height:28px; border-radius:5px; text-align:center; line-height:28px; color:#fff; background:rgba(0,0,0,.6);}
+	}
+}
+
+/* 리뷰상세 */
+.reviewPage {position:absolute; right:90px; top:34px; color:#888; font:16px/16px 'Roboto';}
+.reviewControls {
+	.prev {position:absolute; left:-100px; top:50%; overflow:hidden; width:57px; height:92px; margin-top:-39px; white-space:nowrap; text-indent:100%; background:url(/static/images/icon/ic_prev2.png) no-repeat 0 0;}
+	.next {position:absolute; right:-100px; top:50%; overflow:hidden; width:57px; height:92px; margin-top:-39px; white-space:nowrap; text-indent:100%; background:url(/static/images/icon/ic_next2.png) no-repeat 0 0;}
+}
+
+/* 문의하기, 리뷰쓰기 */
+.qnaForm {padding:0 10px; margin-bottom:20px;
+	.pdt {position:relative; min-height:104px; padding:0 0 30px 102px; margin:0 -10px; border-bottom:2px solid #111;
+		.thumb {overflow:hidden; position:absolute; left:20px; top:0; width:72px; height:72px; padding:6px; border-radius:10px; background:#eee;}
+		.tag {padding-top:15px;}
+		.tit {margin-top:5px; font-size:16px; line-height:28px;}
+	}
+	h2 {margin:30px 0 10px; color:#888; line-height:1em;}
+	input[type=text], input[type=file] {display:block; width:100%;}
+	.txtArea {display:block; padding:10px 10px 10px 20px; margin-top:10px; border:1px solid #ddd; border-radius:10px;
+		textarea {display:block; width:100%; height:200px; padding:0; border:0;}
+	}
+	.file {margin-top:10px;}
+	.fileText {margin-top:10px; font-size:16px;
+		img {margin:-2px 0 0 4px; vertical-align:middle;}
+		&:first-of-type {padding-top:10px;}
+		&:last-of-type {padding-bottom:20px; border-bottom:1px solid #ddd;}
+	}
+	.attach {width:80px; margin-top:10px;
+		.sizeD {min-width:auto;}
+	}
+}
+
+/* 배송지등록 */
+.defaultCheck {margin-top:30px; font-size:16px;}
+
+/* 배송지관리 *
+.addressList {overflow-y:auto; max-height:350px; padding-right:10px; margin-top:-10px; border-top:2px solid #bbb;
+	li {position:relative; padding:20px 90px 20px 40px; border-bottom:1px solid #ddd;
+		.default {display:inline-block; height:26px; padding:0 10px; margin-bottom:10px; border-radius:10px; font-size:12px; line-height:26px; color:#888; background:#eee;}
+		label {position:absolute; left:10px; top:50%; margin-top:-10px;}
+		.addr {font-size:16px;}
+		.name {margin-top:5px; font-size:16px;
+			.num {position:relative; padding-left:11px; margin-left:10px; color:#888;
+				&:before {content:""; position:absolute; left:0; top:50%; width:1px; height:8px; margin-top:-4px; background:#ddd;}
+			}
+		}
+		.btn {position:absolute; right:0; top:50%; text-align:right; margin-top:-20px;
+			button {display:inline-block; text-align:center; width:28px;
+				&.modify:before {content:""; display:block; width:20px; height:20px; margin:0 auto 5px; background:url(/static/images/icon/ic_edit.png) no-repeat 0 0;}
+				&.delete:before {content:""; display:block; width:20px; height:20px; margin:0 auto 5px; background:url(/static/images/icon/ic_del2.png) no-repeat 0 1px;}
+				&.delete {margin-left:15px; color:#aaa;}
+			}
+		}
+	}
+}
+
+/* 할인쿠폰 */
+.couponHead {margin:20px 0; overflow:hidden;
+	h2 {float:left; font-size:24px; line-height:1em;}
+	p {float:right; padding-top:10px; line-height:1em; color:#888;}
+	&~.couponHead {margin-top:60px;}
+}
+
+
+.totalPrice {padding:30px 0; border-radius:10px; text-align:center; background:#f5f5f5;
+	p {display:inline-block; padding-bottom:18px; text-align:center; vertical-align:bottom; color:#888;
+		em {display:block; margin-top:10px; color:#111;
+			.num {font-size:20px;}
+		}
+		&.typeB {min-width:130px; padding-bottom:0;
+			.message {text-align:center; font-size:12px; line-height:18px;}
+		}
+		&.total em {font-size:16px;
+			.num {font-size:24px; font-weight:600;}
+		}
+	}
+	.mark {display:inline-block; width:90px; padding-bottom:18px; text-align:center; vertical-align:bottom; font-size:16px; font-weight:600;}
+}
+
+/* 병의원예약 */
+.clinicReser {
+	h2 {font-size:24px; font-weight:600; line-height:1em;}
+	.tag {margin-top:15px;
+		span {display:inline-block; height:28px; padding:0 8px; margin-left:4px; border-radius:14px; line-height:28px; color:#888; font-size:12px; background:#f5f5f5;}
+	}
+	.fieldArea {border:0;
+		h3 {position:relative; margin-top:20px; font-size:18px;
+			.icoGo {position:absolute; right:0; top:0; color:#888; font-size:14px;
+				&:before, &:after {background:#888;}
+			}
+		}
+		.field {padding-top:10px;}
+	}
+	.text {margin-top:20px; text-align:center; color:#888;}
+}
+
+#popWrap.searchClinicWrap {width:1200px; padding:0;
+	h1 {padding-left:30px;}
+	#popCont {overflow:hidden !important; padding:0;}
+	.clinicArea {
+		.searchArea, .clinicDetail {left:20px; top:20px; margin-left:0;}
+		.clinicDetail {
+			.detail {padding:20px 0; margin:20px 20px 0; border-top-width:1px;}
+		}
+	}
+}
+
+/* 제품검색 */
+.searchResult {margin-top:30px;
+	.total {margin-bottom:15px; font-size:18px; line-height:1em;
+		.text {margin-left:10px; color:#888; font-size:14px;}
+	}
+	.scr {overflow-y:auto; max-height:451px; padding-right:15px; margin-right:-15px; border-top:2px solid #bbb; border-bottom:1px solid #bbb; text-align:center;
+		.warning {display:inline-block; margin:100px 0;}
+		li {position:relative; min-height:112px; padding:43px 120px 20px 92px; text-align:left;
+			.thumb {overflow:hidden; position:absolute; left:0; top:20px; width:72px; height:72px; border-radius:10px; background:#eee;}
+			.srmy {margin-bottom:10px; font-size:12px; line-height:1em; color:#888;
+				em+em:before {content:""; display:inline-block; width:1px; height:8px; margin-left:10px; margin-right:10px; background:#bbb;}
+			}
+			.name {font-size:18px;}
+			.btnTypeG {position:absolute; right:20px; top:50%; margin-top:-16px; color:#aaa; background:#fff;}
+			&+li {border-top:1px solid #ddd;}
+		}
+		.typeB li {padding-top:35px;}
+	}
+}
+h1+.searchResult {margin-top:20px;}
+
+/* 원료이야기 */
+.basePage {position:absolute; right:90px; top:34px; color:#888; font:16px/16px 'Roboto';}
+.baseControls {
+	.prev {position:absolute; left:-100px; top:50%; overflow:hidden; width:57px; height:92px; margin-top:-39px; white-space:nowrap; text-indent:100%; background:url(/static/images/icon/ic_prev2.png) no-repeat 0 0;}
+	.next {position:absolute; right:-100px; top:50%; overflow:hidden; width:57px; height:92px; margin-top:-39px; white-space:nowrap; text-indent:100%; background:url(/static/images/icon/ic_next2.png) no-repeat 0 0;}
+}
+.baseDetail {position:relative; min-height:220px; padding-right:240px;
+	.tit {font-size:34px; margin-bottom:20px;}
+	.cont {font-size:16px; color:#666;}
+	.icon {position:absolute; right:30px; top:30px; width:180px; height:180px;
+		&:before {content:""; position:absolute; right:-30px; top:-30px; width:220px; height:220px; border-radius:100%; background:#fff7ec;}
+		img {position:relative; z-index:1;} 
+	}
+}
+.baseRelative {position:relative; padding:20px 30px 30px; margin-top:30px; border-radius:10px; background:#f5f5f5;
+	h2 {margin-bottom:30px; font-size:18px;}
+	ul {
+		.pdt {position:relative; width:50%; min-height:72px; padding-left:92px; 
+			.thumb {overflow:hidden; position:absolute; left:0; top:0; width:72px; height:72px; padding:4px; border-radius:10px; background:#fff;}
+			.tit {font-size:16px; line-height:28px; font-weight:500;}
+		}
+	}
+	.nav {position:absolute; right:30px; top:20px;
+		.prev, .next {display:inline-block; vertical-align:middle;}
+		.page {display:inline-block; width:50px; text-align:center; font-family:'Roboto'; color:#888; font-size:15px; line-height:30px; vertical-align:middle;
+			span {margin:0 -4px;}
+		}
+	}		
+} 
+
+/* 정기배송 결제카드 정보변경 */
+.cardModify {padding-top:20px; border-top:2px solid #bbb;
+	.text {font-size:16px; font-weight:600;}
+	.text2 {margin:20px 0; padding:20px; border-radius:10px; color:#666; background:#f5f5f5;
+		em {color:#111;
+			&:before {content:""; display:inline-block; width:1px; height:10px; margin:-3px 20px 0 16px; vertical-align:middle; background:#bbb;}
+		}
+	}
+	.text3 {margin-bottom:15px;}
+}
+
+/* 정기배송해지완료 */
+.cancelComplete {text-align:center; line-height:1em;
+	strong {display:block; margin-bottom:10px; font-size:16px;}
+	&:before {content:""; display:block; width:46px; height:46px; margin:0 auto 20px; background:url(/static/images/icon/ic_check3.png) no-repeat 0 0;}
+}
+
+/* 병의원예약목록 */
+.myReserList {padding-top:0 !important;
+	.list {
+		li {padding:20px 0; border-bottom:1px solid #ddd;
+			>.icoFold {display:block;
+				&:before, &:after {top:12px; width:12px;}
+				&:before {right:5px;}
+			}
+			.status {padding-left:24px; color:#888; line-height:18px; background:url(/static/images/icon/ic_wait2.png) no-repeat 0 50%;
+				&.complete {color:#4279be; background-image:url(/static/images/icon/ic_check10.png);}
+			}
+			.name {margin-top:10px; font-weight:600; font-size:16px;}
+			.date {position:relative; padding-left:90px; margin-top:10px; background:url(/static/images/icon/ic_calendar2.png) no-repeat 0 2px;
+				em {position:absolute; left:25px; top:0; color:#666; font-family:'Assistant', 'Noto';}
+				.time:before {content:""; display:inline-block; width:1px; height:10px; margin:-2px 10px 0; vertical-align:middle; background:#ddd;}
+			}
+			.type {position:relative; padding-left:90px; margin-top:10px; background:url(/static/images/icon/ic_list3.png) no-repeat 0 2px;
+				em {position:absolute; left:25px; top:0; color:#666;}
+			}
+			.cont {padding-left:25px; margin-top:10px; background:url(/static/images/icon/ic_message.png) no-repeat 0 2px;
+				em {color:#666;}
+				.txtArea {position:relative; padding:15px; margin-left:-25px; margin-top:10px; border:1px solid #ddd; border-radius:10px; font-size:16px;
+					&:before {content:""; position:absolute; left:12px; top:-7px; width:7px; height:7px; background:url(/static/images/icon/ic_balloon5.png) no-repeat 0 0;}
+				}
+			}
+			.location {margin-top:20px; padding-left:20px; background:url(/static/images/icon/ic_location3.png) no-repeat 0 2px;
+				a {color:#888;}
+			}
+			.btn {margin-top:30px;
+				a {width:100%;}
+			}
+		}
+	}
+	.caution {margin-top:20px;
+		li {padding:0; margin-top:5px; line-height:22px;
+			&:before {display:none;}
+		}
+	}
+}
+
+/* 찾아가는길 */
+.clinicInfo {width:auto; padding:0;
+	.location {margin:0;}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
